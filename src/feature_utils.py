@@ -266,11 +266,20 @@ def invoke_sagemaker_json_endpoint(
 # ---------------------------------------------------------------------
 # Optional: fetch Bitcoin prices (useful if you want to auto-fill the input)
 # ---------------------------------------------------------------------
-def fetch_bitcoin_price_usd_coingecko(*, timeout: int = 10) -> float:
-    """Fetch current BTC price (USD) using CoinGecko public API."""
-    url = "https://api.coingecko.com/api/v3/simple/price"
-    params = {"ids": "bitcoin", "vs_currencies": "usd"}
-    r = requests.get(url, params=params, timeout=timeout)
-    r.raise_for_status()
-    data = r.json()
-    return float(data["bitcoin"]["usd"])
+
+def get_bitcoin_historical_prices(days = 60):
+    
+    BASE_URL = "https://api.coingecko.com/api/v3/coins/bitcoin/market_chart"
+    
+    params = {
+        'vs_currency': 'usd',
+        'days': days,
+        'interval': 'daily' # Ensure we get daily granularity
+    }
+    response = requests.get(BASE_URL, params=params)
+    data = response.json()
+    prices = data['prices']
+    df = pd.DataFrame(prices, columns=['Timestamp', 'Close Price (USD)'])
+    df['Date'] = pd.to_datetime(df['Timestamp'], unit='ms').dt.normalize()
+    df = df[['Date', 'Close Price (USD)']].set_index('Date')
+    return df
