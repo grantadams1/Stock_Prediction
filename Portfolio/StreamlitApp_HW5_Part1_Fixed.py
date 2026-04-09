@@ -84,7 +84,7 @@ sm_session = sagemaker.Session(boto_session=session)
 # ── Helper: load SP500 data ──────────────────────────────────────────────────
 @st.cache_data
 def load_sp500_dataset():
-    return pd.read_csv("./SP500Data.csv", index_col=0)
+    return pd.read_csv("Portfolio/SP500Data.csv", index_col=0)
 
 
 # ── Helper: feature engineering ──────────────────────────────────────────────
