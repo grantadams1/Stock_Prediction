@@ -14,6 +14,7 @@ import sagemaker
 from sagemaker.predictor import Predictor
 from sagemaker.serializers import CSVSerializer
 from sagemaker.deserializers import JSONDeserializer
+from sagemaker.serializers import JSONSerializer
 from sagemaker.serializers import NumpySerializer
 from sagemaker.deserializers import NumpyDeserializer
 
@@ -96,7 +97,7 @@ def call_model_api(input_df):
     predictor = Predictor(
         endpoint_name=MODEL_INFO["endpoint"],
         sagemaker_session=sm_session,
-        serializer=NumpySerializer(),
+        serializer=JSONSerializer(),
         deserializer=NumpyDeserializer() 
     )
 
@@ -114,12 +115,12 @@ def display_explanation(input_df, session, aws_bucket):
    
     dataset = pd.read_csv(r'Portfolio/SP500Data.csv',index_col=0)
     random = 'IBM'
-    random_price = json.loads(request_body)[random]
+    random_price = input_df[random]
     closest_date = (dataset[random] - float(random_price)).abs().idxmin()
 
     return_period = 5
 
-    X = np.log(dataset.drop([random],axis=1)).diff(return_period)
+    X = np.log(dataset.drop(['AMD'],axis=1)).diff(return_period)
     X = np.exp(X).cumsum()
     X.columns = [name + "_CR_Cum" for name in X.columns]
     
