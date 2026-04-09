@@ -123,7 +123,7 @@ def display_explanation(input_df, session, aws_bucket):
     X = np.exp(X).cumsum()
     X.columns = [name + "_CR_Cum" for name in X.columns]
     
-    input_df = X.loc[closest_date]]
+    input_df = X.loc[[closest_date]]
 
     best_pipeline = load_pipeline(session, aws_bucket, 'sklearn-pipline-deployment')
 
